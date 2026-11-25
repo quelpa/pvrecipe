@@ -11,7 +11,7 @@
 ;; (https://raw.githubusercontent.com/melpa/melpa/master/recipes/) and
 ;; translate them into `package-vc-install' specifications.  Example:
 ;;
-;;     (pvrecipe 'magit)  =>  (magit :url "https://github.com/magit/magit")
+;;     (pvrecipe 'magit)  =>  (magit :url "https://github.com/magit/magit" :lisp-dir "lisp")
 
 ;;; Code:
 
