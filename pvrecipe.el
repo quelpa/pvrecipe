@@ -2,7 +2,7 @@
 
 ;; Author: Reto Hubmann (@steckerhalter)
 ;; Version: 0.1
-;; Package-Origin: (quelpa2 :url "https://github.com/quelpa/pvrecipe")
+;; Package-Origin: (pvrecipe :url "https://github.com/quelpa/pvrecipe")
 ;; URL: https://github.com/quelpa/pvrecipe
 
 ;;; Commentary:
