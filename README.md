@@ -2,7 +2,7 @@
 
 Fetch MELPA recipes over HTTP from the MELPA repository on GitHub and
 translate them into `package-vc-install` specifications.  Used by
-`quelpa2` as a fallback when a dependency has no recipe in
+`quelpa2` as an optional fallback when a dependency has no recipe in
 `Package-Requires-Origins`.
 
 Keys that package-vc supports (`:branch`, `:lisp-dir`,
@@ -18,5 +18,5 @@ Example:
 ```elisp
 (require 'pvrecipe)
 
-(pvrecipe 'magit)  ;=> (magit :url "https://github.com/magit/magit")
+(pvrecipe 'magit)  ;=> (magit :url "https://github.com/magit/magit" :lisp-dir "lisp")
 ```
