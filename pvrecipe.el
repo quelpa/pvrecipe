@@ -1,7 +1,7 @@
 ;;; pvrecipe.el --- Translate MELPA recipes to package-vc specifications -*- lexical-binding: t; -*-
 
 ;; Author: Reto Hubmann (@steckerhalter)
-;; Version: 0.1
+;; Version: 0.2
 ;; Package-Origin: (pvrecipe :url "https://github.com/quelpa/pvrecipe")
 ;; URL: https://github.com/quelpa/pvrecipe
 
@@ -113,6 +113,17 @@ but do not prevent the translation."
                                           (pvrecipe--derive-lisp-dir plist))))
                   (list :lisp-dir lisp-dir)))))))
 
+(defun pvrecipe--fontify-elisp (form-or-string)
+  "Return FORM-OR-STRING as a propertized string fontified with emacs-lisp-mode syntax highlighting."
+  (with-temp-buffer
+    (emacs-lisp-mode)
+    (let ((text (if (stringp form-or-string)
+                    form-or-string
+                  (prin1-to-string form-or-string))))
+      (insert text)
+      (font-lock-ensure)
+      (buffer-string))))
+
 ;;;###autoload
 (defun pvrecipe (name)
   "Return a package-vc install specification for package NAME.
@@ -120,7 +131,8 @@ The MELPA recipe is fetched via HTTP from the MELPA repository on
 GitHub and translated into a `package-vc-install' specification.
 Return nil when the recipe can't be fetched or translated.
 When called interactively with NAME read from the minibuffer, print
-the resulting specification in the echo area."
+the resulting MELPA recipe and specification in the echo area,
+fontified with `emacs-lisp-mode' syntax highlighting."
   (interactive
    (list (intern (completing-read "Package recipe: "
                                   (when-let* ((url (concat pvrecipe-base-url "../"))
@@ -130,12 +142,16 @@ the resulting specification in the echo area."
                                               )
                                     nil)
                                   nil nil nil nil))))
-  (let ((spec (when-let* ((recipe (pvrecipe--fetch name)))
-                (pvrecipe--translate recipe))))
+  (let* ((recipe (pvrecipe--fetch name))
+         (spec (and recipe (pvrecipe--translate recipe))))
     (if (called-interactively-p 'any)
-        (if spec
-            (message "%S" spec)
-          (message "Could not fetch or translate recipe for %s" name))
+        (if recipe
+            (message "%s %s\n%s %s"
+                     (propertize "  MELPA  " 'face '(:foreground "#e3d2e3" :background "#912b91"))
+                     (pvrecipe--fontify-elisp recipe)
+                     (propertize " package " 'face '(:foreground "#c8ddff" :background "#305a9f"))
+                     (pvrecipe--fontify-elisp spec))
+          (message "Could not fetch recipe for %s" name))
       spec)))
 
 (provide 'pvrecipe)
