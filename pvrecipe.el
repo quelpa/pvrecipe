@@ -118,9 +118,25 @@ but do not prevent the translation."
   "Return a package-vc install specification for package NAME.
 The MELPA recipe is fetched via HTTP from the MELPA repository on
 GitHub and translated into a `package-vc-install' specification.
-Return nil when the recipe can't be fetched or translated."
-  (when-let* ((recipe (pvrecipe--fetch name)))
-    (pvrecipe--translate recipe)))
+Return nil when the recipe can't be fetched or translated.
+When called interactively with NAME read from the minibuffer, print
+the resulting specification in the echo area."
+  (interactive
+   (list (intern (completing-read "Package recipe: "
+                                  (when-let* ((url (concat pvrecipe-base-url "../"))
+                                              ;; Try listing or reading if possible, or read symbol.
+                                              ;; Since MELPA recipe repo doesn't have a simple directory index without HTML,
+                                              ;; we can prompt for a symbol.
+                                              )
+                                    nil)
+                                  nil nil nil nil))))
+  (let ((spec (when-let* ((recipe (pvrecipe--fetch name)))
+                (pvrecipe--translate recipe))))
+    (if (called-interactively-p 'any)
+        (if spec
+            (message "%S" spec)
+          (message "Could not fetch or translate recipe for %s" name))
+      spec)))
 
 (provide 'pvrecipe)
 ;;; pvrecipe.el ends here
